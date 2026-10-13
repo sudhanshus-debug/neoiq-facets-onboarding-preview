@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeoIQ — Facets service onboarding (E2E)</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --surface: #fff;
+      --text: #1a1a1a;
+      --muted: #5c5c5c;
+      --border: #e2e2de;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --warn-soft: #fffbeb;
+      --warn-border: #f59e0b;
+      --ok: #16a34a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 15px;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .topbar a {
+      color: var(--accent);
+      text-decoration: none;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+    }
+    .topbar a:hover { text-decoration: underline; }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 1.5rem 1rem;
+    }
+    header h1 { margin: 0 0 0.35rem; font-size: 1.35rem; font-weight: 650; }
+    header p { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 56rem; }
+    main { max-width: 58rem; margin: 0 auto; padding: 1.25rem 1.5rem 3rem; }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1rem;
+      scroll-margin-top: 3.5rem;
+    }
+    section h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.08rem;
+      font-weight: 650;
+    }
+    section h3 {
+      margin: 1rem 0 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      padding: 0.85rem 1rem;
+      margin: 0 0 1rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.92rem;
+    }
+    .callout.warn {
+      background: var(--warn-soft);
+      border-left-color: var(--warn-border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    a { color: var(--accent); }
+    code {
+      font-size: 0.85em;
+      background: var(--bg);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      word-break: break-word;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 0.85rem 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .mermaid { margin: 0.5rem 0 0; overflow-x: auto; }
+    .pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      margin-right: 0.35rem;
+    }
+    .pill-a { background: #dbeafe; color: #1d4ed8; }
+    .pill-b { background: #dcfce7; color: #15803d; }
+    .pill-both { background: #f3e8ff; color: #7e22ce; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 1rem;
+    }
+    ul.compact { margin: 0.25rem 0; padding-left: 1.2rem; }
+    ul.compact li { margin-bottom: 0.3rem; }
+    .share-strip {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #334155;
+    }
+    .share-strip a { color: #93c5fd; font-weight: 600; }
+    .share-strip code { background: #1e293b; color: #fbbf24; }
+    .share-strip button {
+      margin-left: 0.5rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      border: 1px solid #475569;
+      background: #334155;
+      color: #f1f5f9;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="share-strip" id="share-strip">
+    <strong>Share preview:</strong>
+    After merge to <code>develop</code>, open
+    <a id="share-primary" href="https://raw.githack.com/commerceiq/neoiq-data-platform/develop/docs/specs/neoiq-facets-service-onboarding-e2e.html">this one-click preview link</a>
+    (GitHack).
+    GitHub Pages:
+    <a href="https://commerceiq.github.io/neoiq-data-platform/neoiq-facets-onboarding/">commerceiq.github.io/…/neoiq-facets-onboarding/</a>
+    <button type="button" id="copy-share">Copy primary link</button>
+  </div>
+  <script>
+    document.getElementById("copy-share")?.addEventListener("click", () => {
+      const url = document.getElementById("share-primary")?.href || location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        const b = document.getElementById("copy-share");
+        if (b) { b.textContent = "Copied!"; setTimeout(() => { b.textContent = "Copy primary link"; }, 2000); }
+      });
+    });
+  </script>
+  <nav class="topbar" aria-label="Phases">
+    <a href="#phase0">0 Shape</a>
+    <a href="#phase1">1 App + CI</a>
+    <a href="#phase2">2 Data</a>
+    <a href="#phase3">3 Facets JSON</a>
+    <a href="#phase4">4 Ingress</a>
+    <a href="#phase5">5 Runtime</a>
+    <a href="#phase6">6 Register</a>
+    <a href="#phase7">7 Wiring</a>
+    <a href="#phase8">8 Verify</a>
+    <a href="#phase9">9 Prod</a>
+    <a href="#links">All links</a>
+  </nav>
+
+  <header>
+    <h1>NeoIQ service onboarding — Facets E2E</h1>
+    <p>
+      Public preview artifact (open this file in any browser). Covers GitHub app repo, Bitbucket <code>ciq-facets</code>,
+      ECR, Facets registration, ingress, and runtime config. Examples:
+      <strong>B</strong> = <code>pim-spapi-orchestrator</code> (Databricks);
+      <strong>A</strong> = <code>neoiq-ai-visibility-service</code> (Postgres).
+    </p>
+  </header>
+
+  <main>
+    <div class="callout warn">
+      <strong>Two repos:</strong> Application code lives on <strong>GitHub</strong> (<code>commerceiq/&lt;service&gt;</code>).
+      Kubernetes/Facets definitions live on <strong>Bitbucket</strong> (<a href="https://bitbucket.org/commerceiq/ciq-facets">commerceiq/ciq-facets</a>, project <code>ciq-apps</code>).
+      <code>facetsctl push</code> from CI <em>registers</em> an image; a <strong>Raptor release</strong> usually <em>rolls pods</em>.
+    </div>
+
+    <section id="phase0">
+      <h2><span class="pill pill-both">Phase 0</span> Choose the shape</h2>
+      <table>
+        <thead>
+          <tr><th></th><th><span class="pill pill-a">A Postgres API</span></th><th><span class="pill pill-b">B Databricks API</span></th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Example</td><td><a href="https://github.com/commerceiq/neoiq-ai-visibility-service">neoiq-ai-visibility-service</a></td><td><a href="https://github.com/commerceiq/pim-spapi-orchestrator">pim-spapi-orchestrator</a></td></tr>
+          <tr><td>Data DDL</td><td>Alembic in app repo</td><td><a href="https://bitbucket.org/commerceiq/databricks-schema-management">databricks-schema-management</a></td></tr>
+          <tr><td>DevOps DB ticket</td><td>Yes — Aurora DB + roles</td><td>No Aurora; DBX token/path</td></tr>
+          <tr><td>Port</td><td>8000</td><td>8080</td></tr>
+          <tr><td>Health</td><td><code>/healthz</code>, <code>/readyz</code></td><td><code>/v1/health</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="phase1">
+      <h2><span class="pill pill-both">Phase 1</span> Application repo (GitHub)</h2>
+
+      <h3>1.1 Service, Dockerfile, health</h3>
+      <table>
+        <thead><tr><th>Item</th><th>B: SPAPI</th><th>A: Visibility</th></tr></thead>
+        <tbody>
+          <tr><td>Dockerfile (prod container)</td><td><a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/Dockerfile">Dockerfile</a></td><td><a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/Dockerfile">Dockerfile</a></td></tr>
+          <tr><td>Health routes</td><td><a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/src/routes/health.py">health.py</a></td><td><a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/pro/api/health.py">health.py</a></td></tr>
+          <tr><td>Live beta</td><td><a href="https://pim-spapi-orchestrator.beta.commerceiq.ai/v1/health">/v1/health</a> · <a href="https://pim-spapi-orchestrator.beta.commerceiq.ai/docs">/docs</a></td><td><a href="https://neoiq-ai-visibility.beta.commerceiq.ai/healthz">/healthz</a> · <a href="https://neoiq-ai-visibility.beta.commerceiq.ai/readyz">/readyz</a></td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Dockerfile usage:</strong> CI builds this image → ECR → Facets runs <code>CMD</code> (e.g. <code>uvicorn … :8080</code>).
+        Local dev usually uses <code>uvicorn</code> directly; <code>docker-compose</code> on SPAPI is for Kafka only.
+      </div>
+
+      <h3>1.2 Config</h3>
+      <ul class="compact">
+        <li>B: <a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/src/utils/config.py">config.py</a></li>
+        <li>A: <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/env.example">env.example</a> · <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/pro/config.py">config.py</a></li>
+      </ul>
+
+      <h3>1.3 CI workflow</h3>
+      <pre>uses: commerceiq/github-workflows/.github/workflows/ci-python.yml@main
+with:
+  image_repo: &lt;ecr-name&gt;
+  facets_prefix: ciq-apps
+  app_folder: ciq-apps-&lt;service-name&gt;
+  app_folder_old: ciq-apps-&lt;service-name&gt;
+  deploy_target: facets
+  coverage_package: &lt;package&gt;
+secrets: inherit</pre>
+      <table>
+        <thead><tr><th></th><th>B</th><th>A</th><th>Reference</th></tr></thead>
+        <tbody>
+          <tr><td>ci.yml</td><td><a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/.github/workflows/ci.yml">link</a></td><td><a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/.github/workflows/ci.yml">link</a></td><td><a href="https://github.com/commerceiq/content-agent-plg/blob/develop/.github/workflows/ci.yml">PLG (+ release jobs)</a></td></tr>
+          <tr><td>Shared workflow</td><td colspan="3"><a href="https://github.com/commerceiq/github-workflows/blob/main/.github/workflows/ci-python.yml">ci-python.yml</a></td></tr>
+          <tr><td>Actions runs</td><td><a href="https://github.com/commerceiq/pim-spapi-orchestrator/actions">Actions</a></td><td><a href="https://github.com/commerceiq/neoiq-ai-visibility-service/actions">Actions</a></td><td></td></tr>
+          <tr><td>image_repo</td><td><code>pim-spapi-orchestrator</code></td><td><code>neoiq-ai-visibility-service</code></td><td></td></tr>
+          <tr><td>app_folder</td><td><code>ciq-apps-pim-spapi-orchestrator</code></td><td><code>ciq-apps-neoiq-ai-visibility-service</code></td><td></td></tr>
+        </tbody>
+      </table>
+      <p>Org secrets (example names): <code>CIQ_APPS_BETA_FACETS_REGISTRATION_VALUE</code>, etc. —
+        <a href="https://github.com/organizations/commerceiq/settings/secrets/actions">GitHub org Actions secrets</a>.
+        Branch → env is inside <code>ci-python.yml</code> (see
+        <a href="https://github.com/commerceiq/content-agent-plg/blob/develop/docs/handoffs/devops-handover.md">PLG devops handover</a>).</p>
+    </section>
+
+    <section id="phase2">
+      <h2><span class="pill pill-both">Phase 2</span> Data layer</h2>
+      <h3><span class="pill pill-a">A</span> Postgres</h3>
+      <ul class="compact">
+        <li>Handover: <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/docs/deploy/devops-handover.md">devops-handover.md</a></li>
+        <li>Migrations: <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/tree/develop/migrations">migrations/</a></li>
+        <li>Dagster + Vault: <a href="https://github.com/commerceiq/neoiq-data-platform/blob/develop/docs/plans/handoffs/CTA-1324-unit-1-handoff.md">CTA-1324 unit 1 handoff</a></li>
+        <li>Facets Dagster inject: <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/helm/instances/dagster-user-code.json">dagster-user-code.json</a></li>
+      </ul>
+      <h3><span class="pill pill-b">B</span> Databricks</h3>
+      <ul class="compact">
+        <li>Schema policy: <a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/schema/README.md">schema/README.md</a></li>
+        <li>DDL repo: <a href="https://bitbucket.org/commerceiq/databricks-schema-management">databricks-schema-management</a></li>
+        <li>DBX client: <a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/src/crawler/common/dbx_client.py">dbx_client.py</a></li>
+      </ul>
+    </section>
+
+    <section id="phase3">
+      <h2><span class="pill pill-both">Phase 3</span> Facets infrastructure (Bitbucket)</h2>
+      <p><strong>Question answered:</strong> What pod runs, which image artifact, CPU/RAM, probes, baseline env, IAM attachment.</p>
+
+      <h3>3.1 Service JSON</h3>
+      <ul class="compact">
+        <li>B: <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/service/instances/pim-spapi-orchestrator.json">pim-spapi-orchestrator.json</a></li>
+        <li>Reference (PLG): <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/service/instances/content-agent-plg.json">content-agent-plg.json</a></li>
+        <li>All services: <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/service/instances/">service/instances/</a></li>
+      </ul>
+      <p>Image line must match CI: <code>${blueprint.self.artifacts.ciq-apps-&lt;name&gt;}</code> ↔ <code>app_folder</code> in GitHub.</p>
+
+      <h3>3.2 IAM policy JSON</h3>
+      <ul class="compact">
+        <li>B: <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/iam_policy/instances/pim-spapi-orchestrator-k8s-service-policy.json">pim-spapi-orchestrator-k8s-service-policy.json</a></li>
+        <li>Reference: <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/iam_policy/instances/content-agent-plg-k8s-service-policy.json">content-agent-plg-k8s-service-policy.json</a></li>
+      </ul>
+
+      <h3>3.3 Postgres user <span class="pill pill-a">A only</span></h3>
+      <p><a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/postgres_user/instances/content-agent-plg.json">content-agent-plg.json</a> (pattern on <code>neoiq-aurora-postgres</code>).</p>
+
+      <h3>3.4 Apply in Facets UI</h3>
+      <p>Merge <code>ciq-facets</code> PR → release to environment:</p>
+      <p><a href="https://commerceiq-cp.console.facets.cloud"><strong>commerceiq-cp.console.facets.cloud</strong></a> · project <code>ciq-apps</code> · e.g. beta <code>beta-337909761441</code></p>
+      <pre>raptor create release -p ciq-apps -e beta --target service/pim-spapi-orchestrator</pre>
+    </section>
+
+    <section id="phase4">
+      <h2><span class="pill pill-both">Phase 4</span> Ingress (hostname + ALB)</h2>
+      <p><strong>Question answered:</strong> How HTTPS reaches the service (internal NeoIQ ALB).</p>
+      <ul class="compact">
+        <li>Internal: <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/ingress/instances/neoiq-ingress-1.json">neoiq-ingress-1.json</a> (SPAPI rule: <code>pim-spapi-orchestrator</code>, port 8080, <code>disable: false</code> when live)</li>
+        <li>Public edge (PLG-style): <a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/ingress/instances/neoiq-public-ingress-1.json">neoiq-public-ingress-1.json</a></li>
+        <li>ALB health on service metadata: <code>alb.ingress.kubernetes.io/healthcheck-path: /v1/health</code> (B)</li>
+      </ul>
+      <p>Live: <a href="https://pim-spapi-orchestrator.beta.commerceiq.ai/">https://pim-spapi-orchestrator.beta.commerceiq.ai/</a></p>
+    </section>
+
+    <section id="phase5">
+      <h2><span class="pill pill-both">Phase 5</span> Runtime config (secrets & overrides)</h2>
+      <p><strong>Question answered:</strong> Databricks/Kafka/Postgres URLs, tokens, feature flags — usually <em>not</em> in git.</p>
+      <ul class="compact">
+        <li>Set in Facets / Raptor overrides or <code>${blueprint.self.secrets.*}</code></li>
+        <li>B env catalog: <a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/src/utils/config.py">config.py</a></li>
+        <li>A env catalog: <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/env.example">env.example</a> · <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/docs/deploy/devops-handover.md#3-environment-variables">handover §3</a></li>
+      </ul>
+      <div class="callout warn">Changing overrides may show <code>OVERRIDES: pending</code> until the next release rolls pods.</div>
+    </section>
+
+    <section id="phase6">
+      <h2><span class="pill pill-both">Phase 6</span> Registration vs release</h2>
+      <div class="mermaid">
+flowchart LR
+  M[Merge develop] --> CI[GitHub ci-python]
+  CI --> ECR[Push ECR]
+  ECR --> REG[facetsctl push / register]
+  REG --> REL{Raptor release?}
+  REL -->|yes| POD[New pods]
+  REL -->|no| STALE[Old pods keep running]
+      </div>
+      <ul class="compact">
+        <li>Register example (Dagster repo): <a href="https://github.com/commerceiq/neoiq-data-platform/blob/develop/.github/workflows/deploy-facets.yml">deploy-facets.yml</a></li>
+        <li>A deploy README: <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/deploy/README.md">deploy/README.md</a></li>
+        <li>PLG deploy README: <a href="https://github.com/commerceiq/content-agent-plg/blob/develop/deploy/README.md">deploy/README.md</a></li>
+      </ul>
+    </section>
+
+    <section id="phase7">
+      <h2><span class="pill pill-both">Phase 7</span> Cross-service wiring</h2>
+      <ul class="compact">
+        <li>SPAPI overview / hosts: <a href="https://github.com/commerceiq/pim-spapi-orchestrator/blob/develop/docs/modules/overview.md">overview.md</a></li>
+        <li>Pro pipeline spec: <a href="https://github.com/commerceiq/neoiq-data-platform/blob/develop/docs/specs/CTA-1324-feat-pro-pipeline-spec.md">CTA-1324 spec</a></li>
+        <li>A QA hosts: <a href="https://github.com/commerceiq/neoiq-ai-visibility-service/blob/develop/docs/qa/week-1-d1-health-and-contracts.md">week-1 D1 QA</a></li>
+      </ul>
+    </section>
+
+    <section id="phase8">
+      <h2><span class="pill pill-both">Phase 8</span> Verification</h2>
+      <table>
+        <thead><tr><th>Check</th><th>B</th><th>A</th></tr></thead>
+        <tbody>
+          <tr><td>Health</td><td><a href="https://pim-spapi-orchestrator.beta.commerceiq.ai/v1/health">beta /v1/health</a></td><td><a href="https://neoiq-ai-visibility.beta.commerceiq.ai/healthz">beta /healthz</a></td></tr>
+          <tr><td>Readiness</td><td>—</td><td><a href="https://neoiq-ai-visibility.beta.commerceiq.ai/readyz">beta /readyz</a></td></tr>
+          <tr><td>CI green</td><td><a href="https://github.com/commerceiq/pim-spapi-orchestrator/actions">Actions</a></td><td><a href="https://github.com/commerceiq/neoiq-ai-visibility-service/actions">Actions</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="phase9">
+      <h2><span class="pill pill-both">Phase 9</span> Prod</h2>
+      <p>Repeat Facets enable + secrets for prod env (<code>prod-208876916689</code>), ingress, <code>release-prod</code> on <code>main</code> (see PLG ci.yml). Confirm hostnames in Facets before sharing URLs.</p>
+    </section>
+
+    <section id="links">
+      <h2>Quick link board</h2>
+      <table>
+        <thead><tr><th>Resource</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Facets console</td><td><a href="https://commerceiq-cp.console.facets.cloud">commerceiq-cp.console.facets.cloud</a></td></tr>
+          <tr><td>ciq-facets (Bitbucket)</td><td><a href="https://bitbucket.org/commerceiq/ciq-facets">bitbucket.org/commerceiq/ciq-facets</a></td></tr>
+          <tr><td>ci-python.yml</td><td><a href="https://github.com/commerceiq/github-workflows/blob/main/.github/workflows/ci-python.yml">github-workflows ci-python.yml</a></td></tr>
+          <tr><td>SPAPI service JSON</td><td><a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/service/instances/pim-spapi-orchestrator.json">pim-spapi-orchestrator.json</a></td></tr>
+          <tr><td>SPAPI IAM JSON</td><td><a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/iam_policy/instances/pim-spapi-orchestrator-k8s-service-policy.json">IAM policy</a></td></tr>
+          <tr><td>PLG service JSON (reference)</td><td><a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/service/instances/content-agent-plg.json">content-agent-plg.json</a></td></tr>
+          <tr><td>Internal ingress</td><td><a href="https://bitbucket.org/commerceiq/ciq-facets/src/main/ciq-apps/ingress/instances/neoiq-ingress-1.json">neoiq-ingress-1.json</a></td></tr>
+          <tr><td>This artifact (path in repo)</td><td><code>neoiq-data-platform/docs/specs/neoiq-facets-service-onboarding-e2e.html</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    Generated for NeoIQ engineering · ADHOC onboarding doc · Open locally or host via GitHub raw/pages after merge.
+  </footer>
+</body>
+</html>
